@@ -3,6 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+import matplotlib.pyplot as plt
 
 # ハイパーパラメータの設定
 learning_rate = 0.001
@@ -87,3 +88,16 @@ for t in range(epochs):
             correct += (output.argmax(1) == target).type(torch.float).sum().item()
     
     print('epoch: {}, test loss: {:.6f}, test accuracy: {:.6f}'.format(t+1, test_loss/len(test_dataloader), correct/len(test_dataloader.dataset)))
+
+# 学習したモデルを使用して推論を行う
+test_index = 0
+data = test_data[test_index][0]
+# test_data[test_index][1] # 正解
+
+model.eval()
+with torch.no_grad():
+    x = data.unsqueeze(0).to(device)
+    logits = model(x)
+    pred = torch.softmax(logits, dim=1).squeeze().cpu()
+    plt.bar(range(10), pred)
+    plt.show()
