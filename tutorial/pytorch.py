@@ -11,7 +11,7 @@ batch_size = 64
 epochs = 5
 
 # データセット
-transform=transforms.Compose([
+transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.1307,), (0.3081,))
 ])
