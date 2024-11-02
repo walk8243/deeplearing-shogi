@@ -1,8 +1,10 @@
 # DeepLearning 将棋
 
-## インストール
+## ローカルコードの実行
 
-PyTorchのインストールコマンドは [Start Locally | PyTorch](https://pytorch.org/get-started/locally/) から作成する
+### インストール
+
+PyTorchのインストールコマンドは [Start Locally | PyTorch](https://pytorch.org/get-started/locally/) から作成してください。
 
 ```sh
 conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
@@ -11,7 +13,7 @@ pip install cshogi
 conda install scikit-learn
 ```
 
-## ディレクトリ構成
+### ディレクトリ構成
 
 ```
 - features.py
@@ -33,15 +35,48 @@ conda install scikit-learn
    `- image.py # 画像を表示する
 ```
 
-## 訓練データ
+### 訓練データ
 
 大量の棋譜が入手できるコンピュータ将棋の対局サイトである [floodgate](http://wdoor.c.u-tokyo.ac.jp/shogi/) の棋譜を使用します。
 
 http://wdoor.c.u-tokyo.ac.jp/shogi/x/
 
-## 実行
+### 実行
+
+#### 学習ファイルの生成
 
 ```sh
-!python utils/csa_to_hcpe.py floodgate tarin.hcpe test.hcpe
-!python train.py train.hcpe test.hcpe
+python utils/csa_to_hcpe.py floodgate tarin.hcpe test.hcpe
+```
+
+#### 学習
+
+```sh
+python train.py train.hcpe test.hcpe
+```
+
+## dlshogi
+
+### インストール
+
+[dlshogi](dlshogi.md) を参考にインストールしてください。
+
+さらに追加で以下のライブラリをインストールしてください。
+
+```sh
+conda install onnx
+```
+
+### 学習
+
+学習ファイルは上と同じものを使用してください。
+
+```sh
+python -m dlshogi.train --model shogi.model train.hcpe test.hcpe
+```
+
+### ONNX形式への変換
+
+```sh
+python -m dlshogi.convert_model_to_onnx shogi.model shogi.onnx
 ```
