@@ -22,14 +22,25 @@ conda install scikit-learn
 - network
    `- policy_value_resnet.py
 - utils
-   `- csa_to_hcpe.py
-- floodgate
-   `- wdoor20xx # floodgateから取得した
-       `- 20xx
-           `- wdoor+floodgate-~~.csa
+   |- csa_to_hcpe.py
+   `- plot_log_policy_value.py # 学習の精度をログから可視化する
+- data # 学習データ
+   `- floodgate
+       |- wdoor20xx # floodgateから取得した
+       |   `- wdoor+floodgate-~~.csa
+       |- train.hcpe
+       |- train_average.hcpe
+       `- test.hcpe
+- results # 実行結果
+   `- 20xxxxxx_xxxxxx
+       |- result.model
+       |- result.onnx
+       `- checkpoint-xxx.pth
+- logs # 実行ログ
+   `- train-20xxxxxx_xxxxxx.log
 - checkpoints
    `- checkpoint-~.pth
-- practice
+- tutorial
    |- hello.py # Hello World
    |- pytorch.py # PyTorchを使ってみる
    `- image.py # 画像を表示する
@@ -64,7 +75,7 @@ python train.py train.hcpe test.hcpe
 さらに追加で以下のライブラリをインストールしてください。
 
 ```sh
-conda install onnx
+conda install onnx pandas
 ```
 
 ### 学習
@@ -72,11 +83,19 @@ conda install onnx
 学習ファイルは上と同じものを使用してください。
 
 ```sh
-python -m dlshogi.train --model shogi.model train.hcpe test.hcpe
+python -m dlshogi.train --epoch 1 --batchsize 1024 --model shogi.model --log logs/train.log --lr 0.01 --use_amp --use_evalfix train.hcpe test.hcpe
 ```
 
 ### ONNX形式への変換
 
 ```sh
 python -m dlshogi.convert_model_to_onnx shogi.model shogi.onnx
+```
+
+### 学習ファイルの生成
+
+```sh
+python -m dlshogi.utils.csa_to_hcpe floodgate floodgate.hcpe --eval 5000 --filter_moves 50 --filter_rating 3500
+python -m dlshogi.utils.uniq_hcpe --average floodgate.hcpe floodgate_average.hcpe
+python -m dlshogi.utils.sample_hcpe floodgate_average.hcpe floodgate_test.hcpe 640000
 ```

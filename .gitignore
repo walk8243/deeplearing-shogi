@@ -1,9 +1,3 @@
-### Training ###
-train.hcpe
-test.hcpe
-checkpoints/
-!checkpoints/.gitkeep
-
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -176,9 +170,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-### PyTorch ###
-data/
-
-### floodgate ###
-floodgate/
-!floodgate/.gitkeep
+### Training ###
+data/*
+!data/.gitkeep
+results/*
+!results/.gitkeep
