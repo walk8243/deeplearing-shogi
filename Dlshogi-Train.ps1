@@ -1,7 +1,8 @@
 Param(
 	[int32]$Epoch = 1,
 	[string]$Prevent,
-	[switch]$UsePreTrain
+	[switch]$UsePreTrain,
+	[string]$Data = "floodgate"
 )
 
 $date = (Get-Date -Format "yyyyMMdd_HHmmss")
@@ -24,7 +25,7 @@ python -m dlshogi.train `
 	--model "results/$date/result.model" `
 	--log "logs/train-$date.log" `
 	--lr 0.02 --use_amp --use_evalfix `
-	data/floodgate/train.hcpe data/floodgate/test.hcpe
+	data/$Data/train.hcpe data/$Data/test.hcpe
 
 python -m dlshogi.convert_model_to_onnx `
 	"results/$date/result.model" "results/$date/result.onnx"
