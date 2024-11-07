@@ -5,20 +5,18 @@ Param(
 
 $Dir = ""
 if ($Roots) {
-	$Target = (Get-Item -Path "data/$Roots" -ErrorAction Stop).DirectoryName
-	"$Roots to hcpe"
-	Push-Location "data"
-	$Dir = (Resolve-Path $Target -Relative).SubString(2)
-	Pop-Location
+	$Target = ((Get-Item -Path "$Roots" -ErrorAction Stop).FullName | Resolve-Path -Relative).Substring(2)
+	"$Target to hcpe"
+	$Dir = (Resolve-Path "$Target\..\" -Relative).SubString(2)
 	python -m dlshogi.utils.hcpe3_to_hcpe `
-		"data/$Roots" "data/$Dir/train.hcpe"
+		"$Target" "$Dir\train.hcpe"
 }
 elseif ($Dataset) {
-	Get-Item -Path "data/$Dataset" -ErrorAction Stop
-	"$Dataset csa to hcpe"
-	$Dir = $Dataset
+	Get-Item -Path "$Dataset" -ErrorAction Stop
+	$Dir = (Resolve-Path $Dataset -Relative).SubString(2)
+	"$Dir csa to hcpe"
 	python -m dlshogi.utils.csa_to_hcpe `
-		"data/$Dataset" "data/$Dir/train.hcpe" `
+		"$Dir" "$Dir\train.hcpe" `
 		--eval 5000 --filter_moves 50 `
 		--filter_rating 3500
 }
@@ -26,10 +24,22 @@ else {
 	throw "Specify Dataset or Roots"
 }
 
-python -m dlshogi.utils.uniq_hcpe `
+$Output = python -m dlshogi.utils.uniq_hcpe `
 	--average `
-	"data/$Dir/train.hcpe" "data/$Dir/train_average.hcpe"
+	"$Dir\train.hcpe" "$Dir\train_average.hcpe"
+$Num = "$Output".Split("") | Select-Object -Last 1
+"Unique Cases: $Num"
+$Digits = ([string]$Num).Length
+$SampleNum = 0
+if ($Digits -gt 5) {
+	$SampleNum = [Math]::Pow(2, $Digits - 2) * 10000
+}
+elseif ($Num -lt 10) {
+	$SampleNum = $Num
+}
+else {
+	$SampleNum = $Num -shr 2
+}
 
 python -m dlshogi.utils.sample_hcpe `
-	"data/$Dir/train_average.hcpe" "data/$Dir/test.hcpe" `
-	640000
+	"$Dir\train_average.hcpe" "$Dir\test.hcpe" $SampleNum
